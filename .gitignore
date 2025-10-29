@@ -1,0 +1,11 @@
+*.source
+*.index
+*.dbtype
+*_ss
+*.lookup
+afdb_pdb
+foldseek_tmp
+afdb*
+*.m8
+*.png
+*.tsv
