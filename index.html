@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlphaFold UMAP Explorer</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f7f7f9;
+            color: #1a1a1a;
+        }
+
+        header {
+            padding: 1.5rem clamp(1rem, 3vw, 3rem);
+            background: linear-gradient(90deg, #14213d 0%, #457b9d 100%);
+            color: #fff;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: clamp(1.5rem, 3vw, 2.25rem);
+        }
+
+        header p {
+            margin: 0.75rem 0 0;
+            max-width: 60ch;
+            font-size: clamp(0.95rem, 2vw, 1.05rem);
+            line-height: 1.5;
+        }
+
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 3fr) minmax(320px, 2fr);
+            gap: 1.5rem;
+            padding: clamp(1rem, 3vw, 2rem);
+        }
+
+        @media (max-width: 1000px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 16px 32px rgba(20, 33, 61, 0.12);
+            padding: clamp(1rem, 3vw, 1.75rem);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .panel h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #14213d;
+        }
+
+        label {
+            font-weight: 600;
+            color: #1f2933;
+            display: block;
+            margin-bottom: 0.35rem;
+        }
+
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.75rem;
+            border: 1px solid #d1d9e6;
+            background-color: #fff;
+            font-size: 0.95rem;
+            transition: border 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input[type="file"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #457b9d;
+            box-shadow: 0 0 0 3px rgba(69, 123, 157, 0.2);
+        }
+
+        #plot {
+            width: 100%;
+            min-height: 500px;
+        }
+
+        #molstar-container {
+            position: relative;
+            flex: 1;
+            min-height: 360px;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        #molstar-container[data-loading="true"] {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            color: #475569;
+            letter-spacing: 0.01em;
+        }
+
+        #status {
+            font-size: 0.9rem;
+            color: #334155;
+            background-color: #f1f5f9;
+            padding: 0.75rem 0.9rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .muted {
+            color: #64748b;
+        }
+
+        .inline-hint {
+            font-size: 0.85rem;
+            color: #6c7280;
+            margin-top: 0.4rem;
+        }
+
+        .structure-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+            align-items: baseline;
+        }
+
+        .structure-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #243b53;
+        }
+
+        .structure-header a {
+            font-size: 0.85rem;
+            color: #1d72e8;
+            text-decoration: none;
+        }
+
+        .structure-header a:hover {
+            text-decoration: underline;
+        }
+
+        .metadata-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .metadata-table th,
+        .metadata-table td {
+            padding: 0.35rem 0.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 999px;
+            background-color: #eaf4ff;
+            color: #1e3a8a;
+        }
+
+        .button-inline {
+            border: none;
+            background: none;
+            color: #1d72e8;
+            cursor: pointer;
+            padding: 0;
+            font-size: inherit;
+        }
+
+        .button-inline:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" defer></script>
+    <script src="https://unpkg.com/3dmol@2.0.5/build/3Dmol-min.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>AlphaFold UMAP Explorer</h1>
+        <p>Upload a tab-delimited file containing UniProt accessions along with their UMAP coordinates, explore the interactive
+            plot, and click any point to view the AlphaFold predicted structure in the embedded 3D viewer. Optionally provide
+            a second TSV with per-accession metadata to colour the embedding.</p>
+    </header>
+    <main>
+        <section class="panel" aria-label="data inputs and plot controls">
+            <h2>Upload Data</h2>
+            <div>
+                <label for="coords-file">UMAP coordinates TSV</label>
+                <input id="coords-file" type="file" accept=".tsv,.txt,text/tab-separated-values">
+                <p class="inline-hint">Expected columns: <code>id</code>, <code>umap_x</code>, <code>umap_y</code>.</p>
+            </div>
+            <div>
+                <label for="metadata-file">Optional metadata TSV</label>
+                <input id="metadata-file" type="file" accept=".tsv,.txt,text/tab-separated-values">
+                <p class="inline-hint">First column must match the identifiers in the coordinate file. Subsequent columns provide attributes for colouring/search.</p>
+            </div>
+            <div>
+                <label for="colour-by">Colour by</label>
+                <select id="colour-by" disabled>
+                    <option value="none">No colouring</option>
+                </select>
+            </div>
+            <div id="status" role="status">Awaiting data upload…</div>
+            <div id="plot" aria-live="polite"></div>
+        </section>
+
+        <aside class="panel" aria-label="structure viewer">
+            <div class="structure-header">
+                <h3 id="structure-title">Structure viewer</h3>
+                <a id="structure-link" href="https://alphafold.ebi.ac.uk/" target="_blank" rel="noopener">Open AlphaFold portal</a>
+            </div>
+            <div id="structure-meta" class="muted">Select a point in the plot to fetch the corresponding AlphaFold prediction.</div>
+            <div id="molstar-container" data-loading="true">3D viewer initialising…</div>
+            <details>
+                <summary>Tips</summary>
+                <ul>
+                    <li>Scroll or pinch to zoom the plot. Drag to pan.</li>
+                    <li>Use lasso/box select via the Plotly toolbar to isolate subsets.</li>
+                    <li>Upload your own metadata TSV to colour the embedding by custom annotations.</li>
+                    <li>Click any accession in the plot to load its predicted structure in the panel on the right.</li>
+                </ul>
+            </details>
+        </aside>
+    </main>
+    <script>
+        const state = {
+            coords: [],
+            metadataMap: new Map(),
+            metadataFields: [],
+            viewer3d: null,
+            currentId: null,
+            pendingId: null,
+            palette: [
+                '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+                '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+                '#bcbddc', '#9edae5', '#fdae6b', '#c994c7', '#6baed6'
+            ]
+        };
+
+        const coordsInput = document.getElementById('coords-file');
+        const metadataInput = document.getElementById('metadata-file');
+        const statusBox = document.getElementById('status');
+        const colourSelect = document.getElementById('colour-by');
+        const structureTitle = document.getElementById('structure-title');
+        const structureMeta = document.getElementById('structure-meta');
+        const structureLink = document.getElementById('structure-link');
+        const plotContainer = document.getElementById('plot');
+        const molstarContainer = document.getElementById('molstar-container');
+
+        window.addEventListener('load', () => {
+            initViewer().catch(error => console.error('[UMAP Explorer] Viewer initialisation failed', error));
+        });
+
+        coordsInput.addEventListener('change', handleCoordinateUpload);
+        metadataInput.addEventListener('change', handleMetadataUpload);
+        colourSelect.addEventListener('change', renderPlot);
+
+        function handleCoordinateUpload(event) {
+            const file = event.target.files?.[0];
+            if (!file) {
+                state.coords = [];
+                updateStatus('Awaiting data upload…');
+                resetPlot();
+                return;
+            }
+            readFile(file)
+                .then(parseTsv)
+                .then(rows => {
+                    const requiredColumns = ['id', 'umap_x', 'umap_y'];
+                    const missing = requiredColumns.filter(column => !(column in rows[0] ?? {}));
+                    if (missing.length) {
+                        throw new Error(`Coordinate file is missing columns: ${missing.join(', ')}`);
+                    }
+                    const totalRows = rows.length;
+                    state.coords = rows.map(row => ({
+                        id: row.id.trim(),
+                        x: parseNumber(row.umap_x),
+                        y: parseNumber(row.umap_y),
+                        metadata: {}
+                    })).filter(entry => typeof entry.x === 'number' && typeof entry.y === 'number' && entry.id);
+
+                    if (!state.coords.length) {
+                        throw new Error('No valid coordinate records found after parsing.');
+                    }
+
+                    mergeMetadata();
+                    const skipped = totalRows - state.coords.length;
+                    const summaryParts = [`Loaded ${state.coords.length.toLocaleString()} coordinate${state.coords.length === 1 ? '' : 's'}.`];
+                    if (skipped > 0) {
+                        summaryParts.push(`Skipped ${skipped} row${skipped === 1 ? '' : 's'} with missing or invalid coordinates.`);
+                    }
+                    updateStatus(summaryParts.join(' '));
+                    renderPlot();
+                })
+                .catch(err => {
+                    console.error(err);
+                    updateStatus(`Failed to parse coordinate file: ${err.message}`, true);
+                    state.coords = [];
+                    resetPlot();
+                });
+        }
+
+        function handleMetadataUpload(event) {
+            const file = event.target.files?.[0];
+            if (!file) {
+                state.metadataMap.clear();
+                state.metadataFields = [];
+                updateColourChoices();
+                mergeMetadata();
+                renderPlot();
+                return;
+            }
+
+            readFile(file)
+                .then(parseTsv)
+                .then(rows => {
+                    if (!rows.length || !rows[0].id) {
+                        throw new Error('Metadata file must have an "id" column as the first header.');
+                    }
+                    state.metadataMap = new Map(rows.map(row => {
+                        const { id, ...rest } = row;
+                        return [id.trim(), rest];
+                    }));
+                    const headers = Object.keys(rows[0]);
+                    state.metadataFields = headers.filter(header => header !== 'id');
+                    updateColourChoices();
+                    mergeMetadata();
+                    renderPlot();
+                    updateStatus(`Metadata loaded with ${state.metadataFields.length} attribute${state.metadataFields.length === 1 ? '' : 's'}.`);
+                })
+                .catch(err => {
+                    console.error(err);
+                    updateStatus(`Failed to parse metadata file: ${err.message}`, true);
+                    state.metadataMap.clear();
+                    state.metadataFields = [];
+                    updateColourChoices();
+                    mergeMetadata();
+                    renderPlot();
+                });
+        }
+
+        function updateStatus(message, isError = false) {
+            statusBox.textContent = message;
+            statusBox.style.backgroundColor = isError ? '#fee2e2' : '#f1f5f9';
+            statusBox.style.color = isError ? '#b91c1c' : '#334155';
+            statusBox.style.borderColor = isError ? '#fecaca' : '#e2e8f0';
+        }
+
+        function updateColourChoices() {
+            colourSelect.innerHTML = '';
+            const defaultOption = document.createElement('option');
+            defaultOption.value = 'none';
+            defaultOption.textContent = 'No colouring';
+            colourSelect.appendChild(defaultOption);
+
+            if (state.metadataFields.length) {
+                state.metadataFields.forEach(field => {
+                    const option = document.createElement('option');
+                    option.value = field;
+                    option.textContent = field;
+                    colourSelect.appendChild(option);
+                });
+                colourSelect.disabled = false;
+            } else {
+                colourSelect.disabled = true;
+            }
+        }
+
+        function mergeMetadata() {
+            if (!state.coords.length) return;
+            state.coords.forEach(entry => {
+                const meta = state.metadataMap.get(entry.id) ?? {};
+                entry.metadata = meta;
+            });
+        }
+
+        function resetPlot() {
+            Plotly.purge(plotContainer);
+            plotContainer.innerHTML = '';
+        }
+
+        function renderPlot() {
+            if (!state.coords.length) {
+                resetPlot();
+                return;
+            }
+
+            const colourField = colourSelect.value;
+            const layout = {
+                title: '',
+                xaxis: { title: 'UMAP 1', zeroline: false },
+                yaxis: { title: 'UMAP 2', zeroline: false },
+                hovermode: 'closest',
+                margin: { l: 60, r: 20, t: 20, b: 60 },
+                dragmode: 'pan',
+                legend: { orientation: 'h' },
+                paper_bgcolor: '#ffffff',
+                plot_bgcolor: '#ffffff',
+            };
+
+            let plotData = [];
+
+            if (!colourField || colourField === 'none') {
+                plotData.push(buildTrace(state.coords, { name: 'Proteins', color: '#1f77b4' }));
+            } else {
+                const values = state.coords.map(entry => entry.metadata[colourField]);
+                const numericValues = values.map(parseNumber);
+                const validNumeric = numericValues.every(val => val !== null && isFinite(val));
+
+                if (validNumeric) {
+                    plotData.push(buildTrace(state.coords, {
+                        name: colourField,
+                        colorValues: numericValues,
+                        colorScale: 'Viridis',
+                        colorBarTitle: colourField
+                    }));
+                } else {
+                    const groups = new Map();
+                    state.coords.forEach((entry, index) => {
+                        const category = String(values[index] ?? 'NA');
+                        if (!groups.has(category)) {
+                            groups.set(category, []);
+                        }
+                        groups.get(category).push(entry);
+                    });
+
+                    let paletteIndex = 0;
+                    for (const [category, entries] of groups.entries()) {
+                        const colour = state.palette[paletteIndex % state.palette.length];
+                        paletteIndex += 1;
+                        plotData.push(buildTrace(entries, {
+                            name: category,
+                            color: colour,
+                            showLegend: true
+                        }));
+                    }
+                }
+            }
+
+            Plotly.newPlot(plotContainer, plotData, layout, {
+                responsive: true,
+                modeBarButtonsToRemove: ['toImage', 'zoomIn2d', 'zoomOut2d'],
+            });
+
+            plotContainer.on('plotly_click', event => {
+                const point = event?.points?.[0];
+                if (!point) return;
+                const id = Array.isArray(point.customdata) ? point.customdata[0] : point.customdata;
+                if (id) {
+                    loadStructure(id);
+                }
+            });
+        }
+
+        function buildTrace(entries, { name, color, colorValues, colorScale, colorBarTitle, showLegend = false }) {
+            const hoverTexts = entries.map(entry => buildHoverText(entry));
+            const customData = entries.map(entry => [entry.id]);
+
+            const trace = {
+                type: 'scattergl',
+                mode: 'markers',
+                name,
+                x: entries.map(entry => entry.x),
+                y: entries.map(entry => entry.y),
+                text: hoverTexts,
+                hovertemplate: '%{text}<extra></extra>',
+                customdata: customData,
+                marker: {
+                    size: 10,
+                    opacity: 0.85,
+                    line: { width: 0 },
+                },
+                showlegend: showLegend,
+            };
+
+            if (colorValues) {
+                trace.marker.color = colorValues;
+                trace.marker.colorscale = colorScale ?? 'Viridis';
+                trace.marker.colorbar = { title: colorBarTitle ?? name };
+            } else if (color) {
+                trace.marker.color = color;
+            }
+
+            return trace;
+        }
+
+        function buildHoverText(entry) {
+            const lines = [
+                `<b>${entry.id}</b>`,
+                `UMAP 1: ${entry.x.toFixed(3)}`,
+                `UMAP 2: ${entry.y.toFixed(3)}`
+            ];
+            const metadataEntries = Object.entries(entry.metadata ?? {}).filter(([key, value]) => value !== undefined && value !== null && value !== '');
+            metadataEntries.slice(0, 8).forEach(([key, value]) => {
+                lines.push(`${key}: ${value}`);
+            });
+            if (metadataEntries.length > 8) {
+                lines.push(`(+${metadataEntries.length - 8} more)`);
+            }
+            return lines.join('<br>');
+        }
+
+        async function loadStructure(uniprotId) {
+            if (state.pendingId === uniprotId) {
+                return;
+            }
+
+            state.pendingId = uniprotId;
+            structureTitle.textContent = `Loading ${uniprotId}…`;
+            structureMeta.textContent = 'Downloading AlphaFold model…';
+            structureMeta.classList.add('muted');
+            structureLink.href = `https://alphafold.ebi.ac.uk/entry/${encodeURIComponent(uniprotId)}`;
+
+            try {
+                const viewer = await initViewer();
+
+                viewer.removeAllModels?.();
+                viewer.removeAllSurfaces?.();
+                viewer.render?.();
+
+                const sources = [
+                    ...buildAlphaFoldFileCandidates(uniprotId),
+                    ...buildAlphaFoldProxyCandidates(uniprotId)
+                ];
+                let sourceUsed = null;
+                let lastError = null;
+
+                for (const source of sources) {
+                    try {
+                        console.debug('[UMAP Explorer] Attempting structure load', source.url);
+                        await loadModelIntoViewer(viewer, source);
+                        sourceUsed = source.url;
+                        break;
+                    } catch (err) {
+                        lastError = err;
+                        console.warn('[UMAP Explorer] Failed to load structure from', source.url, err);
+                        viewer.removeAllModels?.();
+                        viewer.removeAllSurfaces?.();
+                        viewer.render?.();
+                    }
+                }
+
+                if (!sourceUsed) {
+                    throw lastError ?? new Error('No AlphaFold structure files could be loaded for this accession.');
+                }
+
+                viewer.setStyle({}, { cartoon: { color: 'spectrum' } });
+                viewer.zoomTo();
+                viewer.render();
+
+                state.currentId = uniprotId;
+                state.pendingId = null;
+                structureTitle.textContent = uniprotId;
+                structureMeta.innerHTML = `<span class="pill">AlphaFold</span> Model loaded from<br>${sourceUsed}`;
+                structureMeta.classList.remove('muted');
+
+                fetchAlphaFoldMetadata(uniprotId)
+                    .then(metadata => {
+                        if (!metadata || state.currentId !== uniprotId) return;
+                        const { description, organism, confidenceText } = metadata;
+                        const metaLines = [
+                            confidenceText ? `<span class="pill">pLDDT: ${confidenceText}</span>` : '',
+                            description,
+                            organism
+                        ].filter(Boolean);
+                        if (metaLines.length) {
+                            structureMeta.innerHTML = metaLines.join('<br>');
+                        }
+                    })
+                    .catch(err => {
+                        console.warn('[UMAP Explorer] Metadata fetch failed (non-critical)', err);
+                    });
+            } catch (error) {
+                structureTitle.textContent = uniprotId;
+                structureMeta.textContent = `Failed to load model: ${error.message}`;
+                structureMeta.classList.add('muted');
+                state.pendingId = null;
+                console.error('[UMAP Explorer] Structure load failed', error);
+            }
+        }
+
+        async function initViewer() {
+            if (state.viewer3d) return state.viewer3d;
+
+            if (molstarContainer && !molstarContainer.hasAttribute('data-loading')) {
+                molstarContainer.setAttribute('data-loading', 'true');
+                molstarContainer.textContent = '3D viewer initialising…';
+            }
+
+            await waitFor3DMol();
+            const lib = window.$3Dmol;
+            if (!lib?.GLViewer) {
+                if (molstarContainer) {
+                    molstarContainer.textContent = '3D viewer script failed to load.';
+                }
+                throw new Error('3Dmol library not available on window object.');
+            }
+
+            if (molstarContainer) {
+                molstarContainer.textContent = '';
+            }
+            const viewer = lib.createViewer(molstarContainer, {
+                backgroundColor: '#ffffff',
+                antialias: true,
+            });
+            viewer.setBackgroundColor(0xffffff);
+            molstarContainer?.removeAttribute('data-loading');
+            molstarContainer?.classList.add('viewer-ready');
+
+            state.viewer3d = viewer;
+            return viewer;
+        }
+
+        function waitFor3DMol() {
+            return new Promise((resolve, reject) => {
+                const checkReady = () => {
+                    if (window.$3Dmol?.GLViewer) {
+                        resolve();
+                        return true;
+                    }
+                    return false;
+                };
+
+                if (checkReady()) return;
+
+                const interval = setInterval(() => {
+                    if (checkReady()) {
+                        clearInterval(interval);
+                        clearTimeout(timeout);
+                    }
+                }, 60);
+
+                const timeout = setTimeout(() => {
+                    clearInterval(interval);
+                    reject(new Error('Timed out waiting for 3Dmol script to load.'));
+                }, 8000);
+            });
+        }
+
+        function loadModelIntoViewer(viewer, source) {
+            return new Promise((resolve, reject) => {
+                if (!window.$3Dmol?.download) {
+                    reject(new Error('3Dmol download helper unavailable.'));
+                    return;
+                }
+                const fetchOptions = source.url.startsWith('/fetch-structure')
+                    ? { cache: 'no-cache', credentials: 'same-origin' }
+                    : { cache: 'no-cache', mode: 'cors', credentials: 'omit' };
+
+                fetch(source.url, fetchOptions)
+                    .then(resp => {
+                        if (!resp.ok) {
+                            throw new Error(`HTTP ${resp.status} while fetching structure.`);
+                        }
+                        return resp.text();
+                    })
+                    .then(text => {
+                        const format = source.format === 'mmcif' ? 'mmcif' : 'pdb';
+                        const model = viewer.addModel(text, format);
+                        if (!model) {
+                            throw new Error('Empty structure received.');
+                        }
+                        resolve(model);
+                    })
+                    .catch(reject);
+            });
+        }
+
+        function readFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(reader.error);
+                reader.readAsText(file);
+            });
+        }
+
+        function parseTsv(rawText) {
+            const text = (rawText ?? '').trim();
+            if (!text) return [];
+
+            const lines = text.split(/\r?\n/).filter(Boolean);
+            const headers = splitRow(lines[0]);
+            if (!headers.length) return [];
+
+            return lines.slice(1).map(line => {
+                const values = splitRow(line);
+                const record = {};
+                headers.forEach((header, index) => {
+                    record[header] = values[index] ?? '';
+                });
+                return record;
+            });
+        }
+
+        function splitRow(line) {
+            return line.split('\t').map(token => token.trim());
+        }
+
+        function parseNumber(value) {
+            if (value === undefined || value === null || value === '') return null;
+            const num = Number(value);
+            return Number.isFinite(num) ? num : null;
+        }
+
+        function buildAlphaFoldFileCandidates(uniprotId) {
+            const safeId = encodeURIComponent(uniprotId);
+            const versions = ['v4', 'v3', 'v2', 'v1', 'v6'];
+            const base = (version, extension) => `https://alphafold.ebi.ac.uk/files/AF-${safeId}-F1-model_${version}.${extension}`;
+            const sources = [];
+
+            versions.forEach(version => {
+                sources.push({ url: base(version, 'pdb'), format: 'pdb' });
+            });
+            versions.forEach(version => {
+                sources.push({ url: base(version, 'cif'), format: 'mmcif' });
+            });
+
+            return sources;
+        }
+
+        function buildAlphaFoldProxyCandidates(uniprotId) {
+            const safeId = encodeURIComponent(uniprotId);
+            const base = (extension) => `/fetch-structure?format=${extension}&id=${safeId}`;
+            return [
+                { url: base('pdb'), format: 'pdb' },
+                { url: base('cif'), format: 'mmcif' },
+            ];
+        }
+
+        async function fetchAlphaFoldMetadata(uniprotId) {
+            const apiUrl = `https://alphafold.ebi.ac.uk/api/prediction/${encodeURIComponent(uniprotId)}`;
+            try {
+                const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+                const timeout = controller ? setTimeout(() => controller.abort(), 10000) : null;
+                const response = await fetch(apiUrl, {
+                    headers: { 'Accept': 'application/json' },
+                    signal: controller?.signal,
+                    mode: 'cors',
+                    credentials: 'omit',
+                });
+                if (timeout) clearTimeout(timeout);
+                if (!response.ok) {
+                    throw new Error(`AlphaFold API returned ${response.status}`);
+                }
+                const models = await response.json();
+                const model = models?.[0];
+                if (!model) return null;
+                const description = model.uniprotDescription ?? model.proteinDescription ?? '';
+                const organism = model.organismScientificName ?? '';
+                const confidence = typeof model.globalMetricValue === 'number' ? model.globalMetricValue : null;
+                const confidenceText = confidence !== null ? confidence.toFixed(1) : null;
+                return { description, organism, confidenceText };
+            } catch (error) {
+                throw error;
+            }
+        }
+    </script>
+</body>
+</html>
