@@ -10,3 +10,4 @@ afdb*
 *.png
 *.tsv
 data
+.DS_Store
