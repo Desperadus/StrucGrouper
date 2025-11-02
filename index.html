@@ -18,10 +18,11 @@
             min-height: 100vh;
             background-color: #f7f7f9;
             color: #1a1a1a;
+            overflow-x: hidden;
         }
 
         header {
-            padding: 1.1rem clamp(0.85rem, 2.5vw, 2.4rem);
+            padding: 1.5rem clamp(1rem, 3vw, 3rem);
             background: linear-gradient(90deg, #14213d 0%, #457b9d 100%);
             color: #fff;
         }
@@ -32,32 +33,26 @@
         }
 
         header p {
-            margin: 0.5rem 0 0;
+            margin: 0.75rem 0 0;
             max-width: 60ch;
-            font-size: clamp(0.9rem, 1.9vw, 1.02rem);
-            line-height: 1.45;
-        }
-
-        header > * {
-            max-width: 94vw;
-            width: 100%;
-            margin-left: auto;
-            margin-right: auto;
+            font-size: clamp(0.95rem, 2vw, 1.05rem);
+            line-height: 1.5;
         }
 
         main {
             flex: 1;
             display: grid;
-            grid-template-columns: minmax(0, 5fr) minmax(18rem, 2fr);
-            gap: clamp(0.75rem, 2vw, 1.5rem);
-            padding: clamp(0.75rem, 2.5vw, 1.6rem);
-            max-width: 95vw;
+            grid-template-columns: minmax(0, 2.75fr) minmax(320px, 1.75fr);
+            gap: clamp(1rem, 2.8vw, 2.25rem);
+            padding: clamp(1rem, 3vw, 2.25rem);
+            max-width: 1400px;
             width: 100%;
-            margin: 0 auto;
+            margin: 0 auto 2rem;
             box-sizing: border-box;
+            align-items: stretch;
         }
 
-        @media (max-width: 62.5rem) {
+        @media (max-width: 1000px) {
             main {
                 grid-template-columns: 1fr;
             }
@@ -66,11 +61,13 @@
         .panel {
             background: #fff;
             border-radius: 1rem;
-            box-shadow: 0 0.85rem 1.7rem rgba(20, 33, 61, 0.1);
-            padding: clamp(0.75rem, 2.5vw, 1.5rem);
+            box-shadow: 0 16px 32px rgba(20, 33, 61, 0.12);
+            padding: clamp(1rem, 3vw, 1.75rem);
             display: flex;
             flex-direction: column;
-            gap: 0.85rem;
+            gap: 1rem;
+            min-height: 0;
+            box-sizing: border-box;
         }
 
         .panel h2 {
@@ -84,15 +81,15 @@
             font-weight: 600;
             color: #1f2933;
             display: block;
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.35rem;
         }
 
         input[type="file"],
         select {
             width: 100%;
-            padding: 0.5rem 0.7rem;
-            border-radius: 0.65rem;
-            border: 0.0625rem solid #d1d9e6;
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.75rem;
+            border: 1px solid #d1d9e6;
             background-color: #fff;
             font-size: 0.95rem;
             transition: border 0.2s ease, box-shadow 0.2s ease;
@@ -102,52 +99,18 @@
         select:focus {
             outline: none;
             border-color: #457b9d;
-            box-shadow: 0 0 0 0.16rem rgba(69, 123, 157, 0.2);
-        }
-
-        .plot-panel {
-            flex: 1;
-        }
-
-        .control-toggle {
-            border: 0.0625rem solid #d1d9e6;
-            border-radius: 0.75rem;
-            padding: 0.75rem 0.85rem 0.85rem;
-            background-color: #f8fafc;
-        }
-
-        .control-toggle[open] {
-            margin-bottom: 0.5rem;
-        }
-
-        .control-toggle summary {
-            font-weight: 600;
-            color: #14213d;
-            cursor: pointer;
-            list-style: none;
-            margin: -0.75rem -0.85rem 0.6rem;
-            padding: 0.75rem 0.85rem;
-        }
-
-        .control-toggle summary::-webkit-details-marker {
-            display: none;
-        }
-
-        .control-grid {
-            display: grid;
-            gap: 0.85rem;
+            box-shadow: 0 0 0 3px rgba(69, 123, 157, 0.2);
         }
 
         #plot {
             width: 100%;
-            min-height: clamp(24rem, 65vh, 52rem);
-            flex: 1;
+            min-height: clamp(320px, 45vh, 640px);
         }
 
         #molstar-container {
             position: relative;
             flex: 1;
-            min-height: clamp(13rem, 38vh, 26rem);
+            min-height: clamp(280px, 48vh, 560px);
             border-radius: 0.75rem;
             overflow: hidden;
             background: #f8fafc;
@@ -166,9 +129,9 @@
             font-size: 0.9rem;
             color: #334155;
             background-color: #f1f5f9;
-            padding: 0.65rem 0.85rem;
-            border-radius: 0.65rem;
-            border: 0.0625rem solid #e2e8f0;
+            padding: 0.75rem 0.9rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
         }
 
         .muted {
@@ -176,9 +139,9 @@
         }
 
         .inline-hint {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #6c7280;
-            margin-top: 0.3rem;
+            margin-top: 0.4rem;
         }
 
         .structure-header {
@@ -204,6 +167,26 @@
             text-decoration: underline;
         }
 
+        #uniprot-meta {
+            font-size: 0.9rem;
+            color: #334155;
+            background-color: #f8fafc;
+            padding: 0.7rem 0.9rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+            line-height: 1.45;
+        }
+
+        #uniprot-meta a {
+            color: #1d72e8;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        #uniprot-meta a:hover {
+            text-decoration: underline;
+        }
+
         .metadata-table {
             width: 100%;
             border-collapse: collapse;
@@ -213,7 +196,7 @@
         .metadata-table th,
         .metadata-table td {
             padding: 0.35rem 0.5rem;
-            border-bottom: 0.0625rem solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
             text-align: left;
         }
 
@@ -224,7 +207,7 @@
             padding: 0.25rem 0.6rem;
             font-size: 0.75rem;
             font-weight: 600;
-            border-radius: 999rem;
+            border-radius: 999px;
             background-color: #eaf4ff;
             color: #1e3a8a;
         }
@@ -241,39 +224,6 @@
         .button-inline:hover {
             text-decoration: underline;
         }
-
-        .info-block {
-            margin-top: 1rem;
-            padding: 0.9rem 1rem;
-            border-radius: 0.75rem;
-            background-color: #f8fafc;
-            border: 0.0625rem solid #e2e8f0;
-        }
-
-        .info-header {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .info-header h4 {
-            margin: 0;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #1f2933;
-        }
-
-        .info-header a {
-            font-size: 0.85rem;
-            color: #1d72e8;
-            text-decoration: none;
-        }
-
-        .info-header a:hover {
-            text-decoration: underline;
-        }
     </style>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" defer></script>
     <script src="https://unpkg.com/3dmol@2.0.5/build/3Dmol-min.js" defer></script>
@@ -286,28 +236,24 @@
             a second TSV with per-accession metadata to colour the embedding.</p>
     </header>
     <main>
-        <section class="panel plot-panel" aria-label="data inputs and plot controls">
-            <details class="control-toggle" open>
-                <summary>Upload &amp; colour controls</summary>
-                <div class="control-grid">
-                    <div>
-                        <label for="coords-file">UMAP coordinates TSV</label>
-                        <input id="coords-file" type="file" accept=".tsv,.txt,text/tab-separated-values">
-                        <p class="inline-hint">Expected columns: <code>id</code>, <code>umap_x</code>, <code>umap_y</code>.</p>
-                    </div>
-                    <div>
-                        <label for="metadata-file">Optional metadata TSV</label>
-                        <input id="metadata-file" type="file" accept=".tsv,.txt,text/tab-separated-values">
-                        <p class="inline-hint">First column must match the identifiers in the coordinate file. Subsequent columns provide attributes for colouring/search.</p>
-                    </div>
-                    <div>
-                        <label for="colour-by">Colour by</label>
-                        <select id="colour-by" disabled>
-                            <option value="none">No colouring</option>
-                        </select>
-                    </div>
-                </div>
-            </details>
+        <section class="panel" aria-label="data inputs and plot controls">
+            <h2>Upload Data</h2>
+            <div>
+                <label for="coords-file">UMAP coordinates TSV</label>
+                <input id="coords-file" type="file" accept=".tsv,.txt,text/tab-separated-values">
+                <p class="inline-hint">Expected columns: <code>id</code>, <code>umap_x</code>, <code>umap_y</code>.</p>
+            </div>
+            <div>
+                <label for="metadata-file">Optional metadata TSV</label>
+                <input id="metadata-file" type="file" accept=".tsv,.txt,text/tab-separated-values">
+                <p class="inline-hint">First column must match the identifiers in the coordinate file. Subsequent columns provide attributes for colouring/search.</p>
+            </div>
+            <div>
+                <label for="colour-by">Colour by</label>
+                <select id="colour-by" disabled>
+                    <option value="none">No colouring</option>
+                </select>
+            </div>
             <div id="status" role="status">Awaiting data upload…</div>
             <div id="plot" aria-live="polite"></div>
         </section>
@@ -318,14 +264,8 @@
                 <a id="structure-link" href="https://alphafold.ebi.ac.uk/" target="_blank" rel="noopener">Open AlphaFold portal</a>
             </div>
             <div id="structure-meta" class="muted">Select a point in the plot to fetch the corresponding AlphaFold prediction.</div>
+            <div id="uniprot-meta" class="muted">UniProt metadata will appear here after selecting a structure.</div>
             <div id="molstar-container" data-loading="true">3D viewer initialising…</div>
-            <div id="uniprot-block" class="info-block" hidden>
-                <div class="info-header">
-                    <h4>UniProt details</h4>
-                    <a id="uniprot-link" href="https://www.uniprot.org/" target="_blank" rel="noopener">Open UniProt entry</a>
-                </div>
-                <div id="uniprot-meta" class="muted">UniProt metadata will appear once a protein is loaded.</div>
-            </div>
             <details>
                 <summary>Tips</summary>
                 <ul>
@@ -345,7 +285,7 @@
             viewer3d: null,
             currentId: null,
             pendingId: null,
-            currentAccession: null,
+            currentIdentifiers: null,
             palette: [
                 '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
                 '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
@@ -362,9 +302,7 @@
         const structureLink = document.getElementById('structure-link');
         const plotContainer = document.getElementById('plot');
         const molstarContainer = document.getElementById('molstar-container');
-        const uniprotBlock = document.getElementById('uniprot-block');
         const uniprotMeta = document.getElementById('uniprot-meta');
-        const uniprotLink = document.getElementById('uniprot-link');
 
         window.addEventListener('load', () => {
             initViewer().catch(error => console.error('[UMAP Explorer] Viewer initialisation failed', error));
@@ -383,7 +321,7 @@
                 return;
             }
             readFile(file)
-                .then(text => parseTsv(text, { flexibleWhitespace: true }))
+                .then(parseTsv)
                 .then(rows => {
                     const requiredColumns = ['id', 'umap_x', 'umap_y'];
                     const missing = requiredColumns.filter(column => !(column in rows[0] ?? {}));
@@ -391,12 +329,17 @@
                         throw new Error(`Coordinate file is missing columns: ${missing.join(', ')}`);
                     }
                     const totalRows = rows.length;
-                    state.coords = rows.map(row => ({
-                        id: row.id.trim(),
-                        x: parseNumber(row.umap_x),
-                        y: parseNumber(row.umap_y),
-                        metadata: {}
-                    })).filter(entry => typeof entry.x === 'number' && typeof entry.y === 'number' && entry.id);
+                    state.coords = rows.map(row => {
+                        const rawId = String(row.id ?? '').trim();
+                        const identifiers = interpretProteinIdentifier(rawId);
+                        return {
+                            id: identifiers.displayId,
+                            x: parseNumber(row.umap_x),
+                            y: parseNumber(row.umap_y),
+                            metadata: {},
+                            identifiers
+                        };
+                    }).filter(entry => typeof entry.x === 'number' && typeof entry.y === 'number' && entry.id);
 
                     if (!state.coords.length) {
                         throw new Error('No valid coordinate records found after parsing.');
@@ -436,10 +379,22 @@
                     if (!rows.length || !rows[0].id) {
                         throw new Error('Metadata file must have an "id" column as the first header.');
                     }
-                    state.metadataMap = new Map(rows.map(row => {
+                    const metadataMap = new Map();
+                    rows.forEach(row => {
                         const { id, ...rest } = row;
-                        return [id.trim(), rest];
-                    }));
+                        const trimmedId = String(id ?? '').trim();
+                        if (!trimmedId) return;
+                        metadataMap.set(trimmedId, rest);
+                        const upperId = trimmedId.toUpperCase();
+                        if (!metadataMap.has(upperId)) {
+                            metadataMap.set(upperId, rest);
+                        }
+                        const lowerId = trimmedId.toLowerCase();
+                        if (!metadataMap.has(lowerId)) {
+                            metadataMap.set(lowerId, rest);
+                        }
+                    });
+                    state.metadataMap = metadataMap;
                     const headers = Object.keys(rows[0]);
                     state.metadataFields = headers.filter(header => header !== 'id');
                     updateColourChoices();
@@ -488,7 +443,21 @@
         function mergeMetadata() {
             if (!state.coords.length) return;
             state.coords.forEach(entry => {
-                const meta = state.metadataMap.get(entry.id) ?? {};
+                const identifiers = entry.identifiers ?? {};
+                const candidates = [];
+                if (entry.id) candidates.push(entry.id);
+                if (identifiers.uniprotId) {
+                    candidates.push(identifiers.uniprotId);
+                    candidates.push(identifiers.uniprotId.toUpperCase());
+                    candidates.push(identifiers.uniprotId.toLowerCase());
+                }
+                let meta = {};
+                for (const key of candidates) {
+                    if (key && state.metadataMap.has(key)) {
+                        meta = state.metadataMap.get(key) ?? {};
+                        break;
+                    }
+                }
                 entry.metadata = meta;
             });
         }
@@ -504,7 +473,7 @@
                 return;
             }
 
-            const colourField = (colourSelect.value && colourSelect.value !== 'none') ? colourSelect.value : null;
+            const colourField = colourSelect.value;
             const layout = {
                 title: '',
                 xaxis: { title: 'UMAP 1', zeroline: false },
@@ -519,12 +488,8 @@
 
             let plotData = [];
 
-            if (!colourField) {
-                plotData.push(buildTrace(state.coords, {
-                    name: 'Proteins',
-                    color: '#1f77b4',
-                    hoverField: null
-                }));
+            if (!colourField || colourField === 'none') {
+                plotData.push(buildTrace(state.coords, { name: 'Proteins', color: '#1f77b4' }));
             } else {
                 const values = state.coords.map(entry => entry.metadata[colourField]);
                 const numericValues = values.map(parseNumber);
@@ -535,9 +500,7 @@
                         name: colourField,
                         colorValues: numericValues,
                         colorScale: 'Viridis',
-                        colorBarTitle: colourField,
-                        hoverField: colourField,
-                        hoverValues: values
+                        colorBarTitle: colourField
                     }));
                 } else {
                     const groups = new Map();
@@ -556,9 +519,7 @@
                         plotData.push(buildTrace(entries, {
                             name: category,
                             color: colour,
-                            showLegend: true,
-                            hoverField: colourField,
-                            hoverValues: category
+                            showLegend: true
                         }));
                     }
                 }
@@ -579,11 +540,8 @@
             });
         }
 
-        function buildTrace(entries, { name, color, colorValues, colorScale, colorBarTitle, showLegend = false, hoverField = null, hoverValues = null }) {
-            const hoverTexts = entries.map((entry, index) => {
-                const value = Array.isArray(hoverValues) ? hoverValues[index] : hoverValues;
-                return buildHoverText(entry, hoverField, value);
-            });
+        function buildTrace(entries, { name, color, colorValues, colorScale, colorBarTitle, showLegend = false }) {
+            const hoverTexts = entries.map(entry => buildHoverText(entry));
             const customData = entries.map(entry => [entry.id]);
 
             const trace = {
@@ -614,35 +572,52 @@
             return trace;
         }
 
-        function buildHoverText(entry, colourField, colourValue) {
-            const lines = [`<b>${entry.id}</b>`];
-            if (colourField && colourValue !== undefined && colourValue !== null) {
-                const displayValue = String(colourValue).trim();
-                if (displayValue) {
-                    lines.push(`${colourField}: ${displayValue}`);
-                }
+        function buildHoverText(entry) {
+            const lines = [
+                `<b>${entry.id}</b>`,
+                `UMAP 1: ${entry.x.toFixed(3)}`,
+                `UMAP 2: ${entry.y.toFixed(3)}`
+            ];
+            if (entry.identifiers?.alphafoldId && entry.identifiers?.uniprotId) {
+                lines.push(`UniProt: ${entry.identifiers.uniprotId}`);
+            }
+            const metadataEntries = Object.entries(entry.metadata ?? {}).filter(([key, value]) => value !== undefined && value !== null && value !== '');
+            metadataEntries.slice(0, 8).forEach(([key, value]) => {
+                lines.push(`${key}: ${value}`);
+            });
+            if (metadataEntries.length > 8) {
+                lines.push(`(+${metadataEntries.length - 8} more)`);
             }
             return lines.join('<br>');
         }
 
-        async function loadStructure(identifierInput) {
-            const idInfo = parseAlphaFoldIdentifier(identifierInput);
-            const loadKey = idInfo.rawId;
-            if (!loadKey) {
-                return;
-            }
-            if (state.pendingId === loadKey) {
+        async function loadStructure(rawId) {
+            const targetEntry = state.coords.find(entry => entry.id === rawId);
+            const identifiers = targetEntry?.identifiers ?? interpretProteinIdentifier(rawId);
+            const displayId = identifiers.displayId || rawId;
+            if (!displayId) {
                 return;
             }
 
-            state.pendingId = loadKey;
-            state.currentAccession = null;
-            structureTitle.textContent = `Loading ${loadKey}…`;
+            if (state.pendingId === displayId) {
+                return;
+            }
+
+            state.pendingId = displayId;
+            state.currentIdentifiers = null;
+            structureTitle.textContent = `Loading ${displayId}…`;
             structureMeta.textContent = 'Downloading AlphaFold model…';
             structureMeta.classList.add('muted');
-            const entryTarget = idInfo.accession ?? loadKey;
-            structureLink.href = `https://alphafold.ebi.ac.uk/entry/${encodeURIComponent(entryTarget)}`;
-            showUniProtLoading(idInfo.accession);
+            const portalId = identifiers.uniprotId || displayId;
+            structureLink.href = `https://alphafold.ebi.ac.uk/entry/${encodeURIComponent(portalId)}`;
+            if (uniprotMeta) {
+                if (identifiers.uniprotId) {
+                    uniprotMeta.textContent = 'Fetching UniProt metadata…';
+                } else {
+                    uniprotMeta.textContent = 'UniProt accession not detected for this identifier.';
+                }
+                uniprotMeta.classList.add('muted');
+            }
 
             try {
                 const viewer = await initViewer();
@@ -652,12 +627,9 @@
                 viewer.render?.();
 
                 const sources = [
-                    ...buildAlphaFoldFileCandidates(idInfo),
-                    ...buildAlphaFoldProxyCandidates(idInfo)
+                    ...buildAlphaFoldFileCandidates(identifiers),
+                    ...buildAlphaFoldProxyCandidates(identifiers)
                 ];
-                if (!sources.length) {
-                    throw new Error('No AlphaFold structure sources could be constructed for this identifier.');
-                }
                 let sourceUsed = null;
                 let lastError = null;
 
@@ -684,23 +656,22 @@
                 viewer.zoomTo();
                 viewer.render();
 
-                state.currentId = loadKey;
+                state.currentId = displayId;
+                state.currentIdentifiers = identifiers;
                 state.pendingId = null;
-                state.currentAccession = idInfo.accession ?? null;
-                structureTitle.textContent = idInfo.rawId;
-                structureMeta.innerHTML = `<span class="pill">AlphaFold</span> Model loaded from<br>${sourceUsed}`;
+                structureTitle.textContent = displayId;
+                structureMeta.innerHTML = `<span class="pill">AlphaFold</span> Model loaded from<br>${escapeHtml(sourceUsed)}`;
                 structureMeta.classList.remove('muted');
 
-                if (idInfo.accession) {
-                    const accessionForFetch = idInfo.accession;
-                    fetchAlphaFoldMetadata(accessionForFetch)
+                if (identifiers.uniprotId) {
+                    fetchAlphaFoldMetadata(identifiers.uniprotId)
                         .then(metadata => {
-                            if (!metadata || state.currentId !== loadKey) return;
+                            if (!metadata || state.currentId !== displayId) return;
                             const { description, organism, confidenceText } = metadata;
                             const metaLines = [
-                                confidenceText ? `<span class="pill">pLDDT: ${confidenceText}</span>` : '',
-                                description,
-                                organism
+                                confidenceText ? `<span class="pill">pLDDT: ${escapeHtml(confidenceText)}</span>` : '',
+                                description ? escapeHtml(description) : '',
+                                organism ? escapeHtml(organism) : ''
                             ].filter(Boolean);
                             if (metaLines.length) {
                                 structureMeta.innerHTML = metaLines.join('<br>');
@@ -709,29 +680,53 @@
                         .catch(err => {
                             console.warn('[UMAP Explorer] Metadata fetch failed (non-critical)', err);
                         });
-                    fetchUniProtMetadata(accessionForFetch)
-                        .then(summary => {
-                            if (!summary || state.currentAccession !== accessionForFetch) return;
-                            renderUniProtMetadata(summary);
-                        })
-                        .catch(err => {
-                            if (state.currentAccession !== accessionForFetch) return;
-                            console.warn('[UMAP Explorer] UniProt metadata fetch failed (non-critical)', err);
-                            showUniProtError('Failed to fetch UniProt metadata.');
-                        });
-                } else {
-                    showUniProtLoading(null);
+
+                    if (uniprotMeta) {
+                        fetchUniProtMetadata(identifiers.uniprotId)
+                            .then(data => {
+                                if (!data || state.currentId !== displayId) return;
+                                const details = [];
+                                const uniProtLink = `https://www.uniprot.org/uniprotkb/${encodeURIComponent(data.accession)}/entry`;
+                                details.push(`<a href="${uniProtLink}" target="_blank" rel="noopener">View on UniProt</a>`);
+                                if (data.proteinName) {
+                                    details.push(`<strong>${escapeHtml(data.proteinName)}</strong>`);
+                                }
+                                if (data.geneNames?.length) {
+                                    const genes = data.geneNames.map(name => escapeHtml(name));
+                                    details.push(`Gene: ${genes.join(', ')}`);
+                                }
+                                if (data.organism) {
+                                    details.push(escapeHtml(data.organism));
+                                }
+                                if (typeof data.length === 'number') {
+                                    details.push(`Length: ${data.length.toLocaleString()} aa`);
+                                }
+                                if (data.functionText) {
+                                    details.push(escapeHtml(data.functionText));
+                                }
+                                uniprotMeta.innerHTML = details.join('<br>');
+                                uniprotMeta.classList.remove('muted');
+                            })
+                            .catch(err => {
+                                if (state.currentId !== displayId) return;
+                                console.warn('[UMAP Explorer] UniProt metadata fetch failed (non-critical)', err);
+                                uniprotMeta.textContent = 'UniProt metadata unavailable.';
+                                uniprotMeta.classList.add('muted');
+                            });
+                    }
+                } else if (uniprotMeta) {
+                    uniprotMeta.classList.add('muted');
                 }
             } catch (error) {
-                structureTitle.textContent = loadKey;
+                structureTitle.textContent = displayId;
                 structureMeta.textContent = `Failed to load model: ${error.message}`;
                 structureMeta.classList.add('muted');
-                state.pendingId = null;
-                if (idInfo.accession) {
-                    showUniProtError('UniProt metadata unavailable for this selection.');
-                } else {
-                    showUniProtLoading(null);
+                if (uniprotMeta) {
+                    uniprotMeta.textContent = 'UniProt metadata unavailable.';
+                    uniprotMeta.classList.add('muted');
                 }
+                state.currentIdentifiers = null;
+                state.pendingId = null;
                 console.error('[UMAP Explorer] Structure load failed', error);
             }
         }
@@ -823,74 +818,72 @@
             });
         }
 
-        function showUniProtLoading(accession) {
-            if (!uniprotMeta || !uniprotBlock) return;
-            if (!accession) {
-                uniprotBlock.setAttribute('hidden', 'hidden');
-                uniprotMeta.textContent = '';
-                if (uniprotLink) {
-                    uniprotLink.removeAttribute('href');
-                }
-                return;
-            }
-            uniprotBlock.removeAttribute('hidden');
-            uniprotMeta.textContent = 'Fetching UniProt metadata…';
-            uniprotMeta.classList.add('muted');
-            if (uniprotLink) {
-                uniprotLink.href = `https://www.uniprot.org/uniprotkb/${encodeURIComponent(accession)}`;
-                uniprotLink.textContent = 'Open UniProt entry';
-                uniprotLink.setAttribute('target', '_blank');
-                uniprotLink.setAttribute('rel', 'noopener');
-            }
+        function readFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(reader.error);
+                reader.readAsText(file);
+            });
         }
 
-        function showUniProtError(message) {
-            if (!uniprotMeta || !uniprotBlock) return;
-            uniprotBlock.removeAttribute('hidden');
-            uniprotMeta.textContent = message;
-            uniprotMeta.classList.add('muted');
+        function parseTsv(rawText) {
+            const text = (rawText ?? '').trim();
+            if (!text) return [];
+
+            const lines = text.split(/\r?\n/).filter(Boolean);
+            const headers = splitRow(lines[0]);
+            if (!headers.length) return [];
+
+            return lines.slice(1).map(line => {
+                const values = splitRow(line);
+                const record = {};
+                headers.forEach((header, index) => {
+                    record[header] = values[index] ?? '';
+                });
+                return record;
+            });
         }
 
-        function renderUniProtMetadata(summary) {
-            if (!uniprotMeta || !uniprotBlock) return;
-            if (!summary) {
-                showUniProtError('UniProt metadata unavailable.');
-                return;
+        function splitRow(line) {
+            if (line.includes('\t')) {
+                return line.split('\t').map(token => token.trim());
             }
-
-            uniprotBlock.removeAttribute('hidden');
-            const lines = [];
-            if (summary.name) {
-                lines.push(`<strong>${escapeHtml(summary.name)}</strong>`);
-            }
-            if (summary.entryName) {
-                lines.push(`Entry: ${escapeHtml(summary.entryName)}`);
-            }
-            if (Array.isArray(summary.geneNames) && summary.geneNames.length) {
-                lines.push(`Gene: ${escapeHtml(summary.geneNames.join(', '))}`);
-            }
-            if (summary.organism) {
-                lines.push(escapeHtml(summary.organism));
-            }
-            if (typeof summary.length === 'number') {
-                lines.push(`Length: ${escapeHtml(summary.length.toLocaleString())} aa`);
-            }
-            if (summary.functionText) {
-                lines.push(escapeHtml(truncateText(summary.functionText, 260)));
-            }
-            if (summary.lastUpdated) {
-                lines.push(`Last updated: ${escapeHtml(summary.lastUpdated)}`);
-            }
-            if (!lines.length) {
-                lines.push('No UniProt summary available for this accession.');
-            }
-            uniprotMeta.innerHTML = lines.join('<br>');
-            uniprotMeta.classList.remove('muted');
+            return line.trim().split(/\s+/);
         }
 
-        async function fetchUniProtMetadata(accession) {
-            if (!accession) return null;
-            const apiUrl = `https://rest.uniprot.org/uniprotkb/${encodeURIComponent(accession)}.json`;
+        function parseNumber(value) {
+            if (value === undefined || value === null || value === '') return null;
+            const num = Number(value);
+            return Number.isFinite(num) ? num : null;
+        }
+
+        function interpretProteinIdentifier(rawId) {
+            const trimmed = String(rawId ?? '').trim();
+            if (!trimmed) {
+                return { displayId: '', uniprotId: '', alphafoldId: null, isAlphaFoldModel: false };
+            }
+            const alphaFoldMatch = /^AF-([^-]+)-F\d+-model_v\d+$/i.exec(trimmed);
+            if (alphaFoldMatch) {
+                const uniprot = alphaFoldMatch[1];
+                return {
+                    displayId: trimmed,
+                    uniprotId: uniprot.toUpperCase(),
+                    alphafoldId: trimmed,
+                    isAlphaFoldModel: true,
+                };
+            }
+            return {
+                displayId: trimmed,
+                uniprotId: trimmed.toUpperCase(),
+                alphafoldId: null,
+                isAlphaFoldModel: false,
+            };
+        }
+
+        async function fetchUniProtMetadata(uniprotId) {
+            if (!uniprotId) return null;
+            const apiUrl = `https://rest.uniprot.org/uniprotkb/${encodeURIComponent(uniprotId)}.json`;
             try {
                 const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
                 const timeout = controller ? setTimeout(() => controller.abort(), 10000) : null;
@@ -904,188 +897,102 @@
                 if (!response.ok) {
                     throw new Error(`UniProt API returned ${response.status}`);
                 }
-                const record = await response.json();
-                return summariseUniProtRecord(record);
+                const data = await response.json();
+                const accession = data.primaryAccession ?? uniprotId;
+                const proteinName =
+                    data.proteinDescription?.recommendedName?.fullName?.value ??
+                    data.proteinDescription?.submissionNames?.[0]?.fullName?.value ??
+                    '';
+                const organismParts = [];
+                if (data.organism?.scientificName) {
+                    organismParts.push(data.organism.scientificName);
+                }
+                if (data.organism?.commonName && data.organism.commonName !== data.organism?.scientificName) {
+                    organismParts.push(`(${data.organism.commonName})`);
+                }
+                const organism = organismParts.join(' ').trim();
+                const geneNamesSet = new Set();
+                (data.genes ?? []).forEach(gene => {
+                    if (gene?.geneName?.value) {
+                        geneNamesSet.add(gene.geneName.value);
+                    }
+                    (gene?.synonyms ?? []).forEach(syn => {
+                        if (syn?.value) {
+                            geneNamesSet.add(syn.value);
+                        }
+                    });
+                });
+                const geneNames = Array.from(geneNamesSet).slice(0, 4);
+                const length = typeof data.sequence?.length === 'number' ? data.sequence.length : null;
+                let functionText = null;
+                if (Array.isArray(data.comments)) {
+                    const functionComment = data.comments.find(comment => comment.commentType === 'FUNCTION');
+                    const textValue = functionComment?.texts?.[0]?.value;
+                    if (textValue) {
+                        const normalised = normaliseWhitespace(textValue);
+                        functionText = truncateText(normalised, 260);
+                    }
+                }
+                return {
+                    accession,
+                    proteinName: proteinName ? normaliseWhitespace(proteinName) : '',
+                    organism,
+                    geneNames,
+                    length,
+                    functionText,
+                };
             } catch (error) {
                 throw error;
             }
         }
 
-        function summariseUniProtRecord(record) {
-            if (!record) return null;
-            const name = getProteinNameFromDescription(record.proteinDescription);
-            const organism = record.organism?.scientificName ?? '';
-            const geneNames = collectGeneNames(record.genes);
-            const length = typeof record.sequence?.length === 'number' ? record.sequence.length : null;
-            const functionText = extractFunctionNote(record.comments);
-            const entryName = record.uniProtkbId ?? null;
-            const accession = record.primaryAccession ?? null;
-            const lastUpdated = record.lastModified ?? null;
-            return { name, organism, geneNames, length, functionText, entryName, accession, lastUpdated };
+        function normaliseWhitespace(value) {
+            return String(value ?? '').replace(/\s+/g, ' ').trim();
         }
 
-        function getProteinNameFromDescription(description) {
-            if (!description) return '';
-            const candidates = [
-                description.recommendedName?.fullName?.value,
-                description.submissionNames?.[0]?.fullName?.value,
-                description.alternativeNames?.[0]?.fullName?.value
-            ];
-            return candidates.find(name => typeof name === 'string' && name.trim().length) ?? '';
-        }
-
-        function collectGeneNames(genes) {
-            if (!Array.isArray(genes)) return [];
-            const names = [];
-            genes.forEach(gene => {
-                const primary = gene?.geneName?.value;
-                if (primary) {
-                    names.push(primary);
-                }
-                (gene?.synonyms ?? []).forEach(syn => {
-                    if (syn?.value) {
-                        names.push(syn.value);
-                    }
-                });
-            });
-            return Array.from(new Set(names)).slice(0, 3);
-        }
-
-        function extractFunctionNote(comments) {
-            if (!Array.isArray(comments)) return '';
-            const functionComment = comments.find(comment => comment.commentType === 'FUNCTION');
-            const raw = functionComment?.texts?.[0]?.value ?? '';
-            return typeof raw === 'string' ? raw.replace(/\s+/g, ' ').trim() : '';
-        }
-
-        function truncateText(text, maxLength = 240) {
-            if (typeof text !== 'string') return '';
-            if (text.length <= maxLength) return text;
-            return `${text.slice(0, Math.max(0, maxLength - 1)).trimEnd()}…`;
+        function truncateText(value, maxLength) {
+            const text = String(value ?? '').trim();
+            if (!text) return '';
+            if (text.length <= maxLength) {
+                return text;
+            }
+            const truncated = text.slice(0, maxLength);
+            const lastSpace = truncated.lastIndexOf(' ');
+            const safeCut = lastSpace > 40 ? truncated.slice(0, lastSpace) : truncated;
+            return `${safeCut}...`;
         }
 
         function escapeHtml(value) {
-            if (value === null || value === undefined) return '';
-            return String(value).replace(/[&<>"']/g, char => {
-                switch (char) {
-                    case '&': return '&amp;';
-                    case '<': return '&lt;';
-                    case '>': return '&gt;';
-                    case '"': return '&quot;';
-                    case '\'': return '&#39;';
-                    default: return char;
-                }
-            });
-        }
-
-        function readFile(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = () => reject(reader.error);
-                reader.readAsText(file);
-            });
-        }
-
-        function parseTsv(rawText, options = {}) {
-            const text = (rawText ?? '').trim();
-            if (!text) return [];
-
-            const lines = text.split(/\r?\n/).filter(line => line.trim().length);
-            if (!lines.length) return [];
-
-            let splitter = splitRowTab;
-            let headers = splitter(lines[0]);
-
-            if (options.flexibleWhitespace && headers.length <= 1) {
-                splitter = splitRowFlexible;
-                headers = splitter(lines[0]);
-            }
-
-            if (!headers.length) return [];
-
-            return lines.slice(1).map(line => {
-                const values = splitter(line);
-                const record = {};
-                headers.forEach((header, index) => {
-                    record[header] = values[index] ?? '';
-                });
-                return record;
-            });
-        }
-
-        function splitRowTab(line) {
-            return line.split('\t').map(token => token.trim());
-        }
-
-        function splitRowFlexible(line) {
-            return line.trim().split(/\s+/).map(token => token.trim());
-        }
-
-        function parseNumber(value) {
-            if (value === undefined || value === null || value === '') return null;
-            const num = Number(value);
-            return Number.isFinite(num) ? num : null;
-        }
-
-        function parseAlphaFoldIdentifier(rawId) {
-            const trimmed = (rawId ?? '').trim();
-            if (!trimmed) {
-                return { rawId: '', accession: null, modelId: null, version: null };
-            }
-
-            const match = trimmed.match(/^AF-([A-Z0-9]+)-F\d+-model_v(\d+)$/i);
-            if (match) {
-                return {
-                    rawId: trimmed,
-                    accession: match[1].toUpperCase(),
-                    modelId: trimmed,
-                    version: match[2],
-                };
-            }
-
-            return {
-                rawId: trimmed,
-                accession: trimmed.toUpperCase(),
-                modelId: null,
-                version: null,
+            const str = String(value ?? '');
+            const replacements = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
             };
+            return str.replace(/[&<>"']/g, char => replacements[char] ?? char);
         }
 
         function buildAlphaFoldFileCandidates(identifier) {
-            const { accession, modelId } = identifier ?? {};
-            const versions = ['v6', 'v4', 'v3', 'v2', 'v1'];
+            const info = typeof identifier === 'string' ? interpretProteinIdentifier(identifier) : (identifier ?? {});
             const sources = [];
-            const seen = new Set();
 
-            if (modelId) {
-                const safeModel = encodeURIComponent(modelId);
-                [
-                    { extension: 'pdb', format: 'pdb' },
-                    { extension: 'cif', format: 'mmcif' }
-                ].forEach(({ extension, format }) => {
-                    const url = `https://alphafold.ebi.ac.uk/files/${safeModel}.${extension}`;
-                    if (!seen.has(url)) {
-                        sources.push({ url, format });
-                        seen.add(url);
-                    }
-                });
+            if (info.alphafoldId) {
+                const safeModel = encodeURIComponent(info.alphafoldId);
+                sources.push({ url: `https://alphafold.ebi.ac.uk/files/${safeModel}.pdb`, format: 'pdb' });
+                sources.push({ url: `https://alphafold.ebi.ac.uk/files/${safeModel}.cif`, format: 'mmcif' });
             }
 
-            if (accession) {
+            if (info.uniprotId) {
+                const safeId = encodeURIComponent(info.uniprotId);
+                const versions = ['v6', 'v5', 'v4', 'v3', 'v2', 'v1'];
+                const base = (version, extension) => `https://alphafold.ebi.ac.uk/files/AF-${safeId}-F1-model_${version}.${extension}`;
                 versions.forEach(version => {
-                    const base = `AF-${accession}-F1-model_${version}`;
-                    const safeBase = encodeURIComponent(base);
-                    [
-                        { extension: 'pdb', format: 'pdb' },
-                        { extension: 'cif', format: 'mmcif' }
-                    ].forEach(({ extension, format }) => {
-                        const url = `https://alphafold.ebi.ac.uk/files/${safeBase}.${extension}`;
-                        if (!seen.has(url)) {
-                            sources.push({ url, format });
-                            seen.add(url);
-                        }
-                    });
+                    sources.push({ url: base(version, 'pdb'), format: 'pdb' });
+                });
+                versions.forEach(version => {
+                    sources.push({ url: base(version, 'cif'), format: 'mmcif' });
                 });
             }
 
@@ -1093,25 +1000,18 @@
         }
 
         function buildAlphaFoldProxyCandidates(identifier) {
-            const ids = [
-                identifier?.rawId,
-                identifier?.modelId,
-                identifier?.accession
-            ].filter(Boolean);
-            const uniqueIds = Array.from(new Set(ids));
-            const sources = [];
-
-            uniqueIds.forEach(idValue => {
-                const safeId = encodeURIComponent(idValue);
-                sources.push({ url: `/fetch-structure?format=pdb&id=${safeId}`, format: 'pdb' });
-                sources.push({ url: `/fetch-structure?format=cif&id=${safeId}`, format: 'mmcif' });
-            });
-
-            return sources;
+            const info = typeof identifier === 'string' ? interpretProteinIdentifier(identifier) : (identifier ?? {});
+            const uniprotId = info.uniprotId;
+            if (!uniprotId) return [];
+            const safeId = encodeURIComponent(uniprotId);
+            const base = (extension) => `/fetch-structure?format=${extension}&id=${safeId}`;
+            return [
+                { url: base('pdb'), format: 'pdb' },
+                { url: base('cif'), format: 'mmcif' },
+            ];
         }
 
         async function fetchAlphaFoldMetadata(uniprotId) {
-            if (!uniprotId) return null;
             const apiUrl = `https://alphafold.ebi.ac.uk/api/prediction/${encodeURIComponent(uniprotId)}`;
             try {
                 const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
