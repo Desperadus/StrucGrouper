@@ -5,14 +5,15 @@
 #   # or pipe:
 #   cat input.tsv | ./af2uniprot.sh > output.tsv
 
-awk -F'\t' 'BEGIN{OFS=FS}
+awk -v FS='\t' -v OFS='\t' '
 NR==1 { print; next }  # keep header as-is
 {
-  # Only transform when it matches the AlphaFold pattern
-  if ($1 ~ /^AF-[^-]+-F[0-9]+-model_v[0-9]+$/) {
-    # AF-<UniProt>-F*-model_v*  → take the 2nd dash-separated token
-    split($1, a, "-");
-    $1 = a[2];
+  # Match AF-<anything>-F<number>-model_v<number>
+  if ($1 ~ /^AF-.*-F[0-9]+-model_v[0-9]+$/) {
+    id = $1
+    sub(/^AF-/, "", id)                          # drop leading "AF-"
+    sub(/-F[0-9]+-model_v[0-9]+$/, "", id)       # drop trailing "-F*-model_v*"
+    $1 = id
   }
   print
 }' "${1:-/dev/stdin}"
