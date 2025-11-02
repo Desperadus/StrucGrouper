@@ -3,7 +3,7 @@
 # Produces a TSV (.m8) with per-query top-K neighbors (preferably with alntmscore).
 #
 # Usage:
-#   ./build_and_search.sh -i afdb_pdb [-q afdb_pdb] [-d afdbDB] [-o knn_raw.m8] \
+#   ./create_foldseek_alignments.sh -i afdb_pdb [-q afdb_pdb] [-d afdbDB] [-o knn_raw.m8] \
 #                         [-T foldseek_tmp] [-k 50] [-t 32] [-f]
 #
 # Options:
@@ -128,7 +128,7 @@ foldseek easy-search "${QUERY}" "${DB}" "${OUT}" "${TMPDIR}" \
   --threads "${THREADS}" \
   --max-seqs "${K}" \
   --alignment-type 1 \
-  --format-output "query,target,alnlen,qcov,tcov,evalue,score,alntmscore"
+  --format-output "query,target,alnlen,qcov,tcov,evalue,bits,alntmscore"
 rc=$?
 set -e
 
