@@ -23,7 +23,7 @@ Run Foldseek-based structural nearest-neighbour searches on AlphaFold (or other)
 
 ### 1. Create a Conda environment
 ```bash
-conda env create -f environment.yml
+conda env create -f environment_raw.yml
 conda activate strucgrouper
 ```
 *Minimal stack*: `environment_raw.yml`.
