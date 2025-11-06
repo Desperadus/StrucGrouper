@@ -12,3 +12,4 @@ dependencies:
   - umap-learn
   - matplotlib
   - pip
+  - h5py
