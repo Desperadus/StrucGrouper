@@ -224,6 +224,45 @@
         .button-inline:hover {
             text-decoration: underline;
         }
+
+        .plot-resize-controls {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .plot-resize-controls button {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            border: 1px solid #d1d9e6;
+            background-color: #f8fafc;
+            color: #1f2937;
+            font-size: 1.1rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .plot-resize-controls button:hover {
+            background-color: #e2e8f0;
+            border-color: #cbd5f5;
+            color: #0f172a;
+        }
+
+        .plot-resize-controls button:focus-visible {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
+        }
+
+        .plot-resize-controls span {
+            font-weight: 600;
+            color: #334155;
+        }
     </style>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" defer></script>
     <script src="https://unpkg.com/3dmol@2.0.5/build/3Dmol-min.js" defer></script>
@@ -256,6 +295,11 @@
             </div>
             <div id="status" role="status">Awaiting data upload…</div>
             <div id="plot" aria-live="polite"></div>
+            <div class="plot-resize-controls" aria-label="Adjust plot height">
+                <span>Plot height</span>
+                <button type="button" id="plot-height-decrease" aria-label="Decrease plot height">-</button>
+                <button type="button" id="plot-height-increase" aria-label="Increase plot height">+</button>
+            </div>
         </section>
 
         <aside class="panel" aria-label="structure viewer">
@@ -303,6 +347,28 @@
         const plotContainer = document.getElementById('plot');
         const molstarContainer = document.getElementById('molstar-container');
         const uniprotMeta = document.getElementById('uniprot-meta');
+        const decreasePlotButton = document.getElementById('plot-height-decrease');
+        const increasePlotButton = document.getElementById('plot-height-increase');
+
+        const PLOT_HEIGHT_MIN = 320;
+        const PLOT_HEIGHT_MAX = 1200;
+        const PLOT_HEIGHT_STEP = 120;
+        const initialHeightEstimate = Math.round(window.innerHeight * 0.45);
+        let currentPlotHeight = clampPlotHeight(
+            Number.isFinite(initialHeightEstimate) && initialHeightEstimate > 0
+                ? initialHeightEstimate
+                : PLOT_HEIGHT_MIN
+        );
+
+        initialisePlotHeight();
+
+        if (decreasePlotButton) {
+            decreasePlotButton.addEventListener('click', () => adjustPlotHeight(-PLOT_HEIGHT_STEP));
+        }
+
+        if (increasePlotButton) {
+            increasePlotButton.addEventListener('click', () => adjustPlotHeight(PLOT_HEIGHT_STEP));
+        }
 
         window.addEventListener('load', () => {
             initViewer().catch(error => console.error('[UMAP Explorer] Viewer initialisation failed', error));
@@ -467,6 +533,47 @@
             plotContainer.innerHTML = '';
         }
 
+        function initialisePlotHeight() {
+            if (!plotContainer) return;
+            const measuredHeight = Math.round(plotContainer.getBoundingClientRect().height);
+            if (measuredHeight) {
+                currentPlotHeight = clampPlotHeight(Math.max(currentPlotHeight, measuredHeight));
+            }
+            updatePlotHeight(false);
+        }
+
+        function adjustPlotHeight(delta) {
+            const nextHeight = clampPlotHeight(currentPlotHeight + delta);
+            if (nextHeight === currentPlotHeight) {
+                return;
+            }
+            currentPlotHeight = nextHeight;
+            updatePlotHeight(true);
+        }
+
+        function updatePlotHeight(shouldNotify = true) {
+            if (!plotContainer) return;
+            plotContainer.style.height = `${currentPlotHeight}px`;
+            if (!shouldNotify) {
+                return;
+            }
+            if (
+                typeof Plotly !== 'undefined' &&
+                Plotly.Plots &&
+                typeof Plotly.Plots.resize === 'function' &&
+                plotContainer.data
+            ) {
+                Plotly.Plots.resize(plotContainer);
+            }
+        }
+
+        function clampPlotHeight(value) {
+            if (!Number.isFinite(value)) {
+                return PLOT_HEIGHT_MIN;
+            }
+            return Math.min(PLOT_HEIGHT_MAX, Math.max(PLOT_HEIGHT_MIN, Math.round(value)));
+        }
+
         function renderPlot() {
             if (!state.coords.length) {
                 resetPlot();
@@ -479,9 +586,15 @@
                 xaxis: { title: 'UMAP 1', zeroline: false },
                 yaxis: { title: 'UMAP 2', zeroline: false },
                 hovermode: 'closest',
-                margin: { l: 60, r: 20, t: 20, b: 60 },
+                margin: { l: 60, r: 20, t: 60, b: 60 },
                 dragmode: 'pan',
-                legend: { orientation: 'h' },
+                legend: {
+                    orientation: 'h',
+                    yanchor: 'bottom',
+                    y: 1.02,
+                    xanchor: 'center',
+                    x: 0.5,
+                },
                 paper_bgcolor: '#ffffff',
                 plot_bgcolor: '#ffffff',
             };
@@ -529,6 +642,7 @@
                 responsive: true,
                 modeBarButtonsToRemove: ['toImage', 'zoomIn2d', 'zoomOut2d'],
             });
+            updatePlotHeight();
 
             plotContainer.on('plotly_click', event => {
                 const point = event?.points?.[0];
@@ -573,20 +687,18 @@
         }
 
         function buildHoverText(entry) {
-            const lines = [
-                `<b>${entry.id}</b>`,
-                `UMAP 1: ${entry.x.toFixed(3)}`,
-                `UMAP 2: ${entry.y.toFixed(3)}`
-            ];
-            if (entry.identifiers?.alphafoldId && entry.identifiers?.uniprotId) {
-                lines.push(`UniProt: ${entry.identifiers.uniprotId}`);
+            const uniprotId = entry.identifiers?.uniprotId || entry.id || '';
+            const lines = [];
+            if (uniprotId) {
+                lines.push(`<b>${escapeHtml(uniprotId)}</b>`);
             }
-            const metadataEntries = Object.entries(entry.metadata ?? {}).filter(([key, value]) => value !== undefined && value !== null && value !== '');
-            metadataEntries.slice(0, 8).forEach(([key, value]) => {
-                lines.push(`${key}: ${value}`);
-            });
-            if (metadataEntries.length > 8) {
-                lines.push(`(+${metadataEntries.length - 8} more)`);
+            const colourField = colourSelect?.value;
+            if (colourField && colourField !== 'none') {
+                const colourValue = entry.metadata?.[colourField];
+                const displayValue = colourValue !== undefined && colourValue !== null && colourValue !== ''
+                    ? colourValue
+                    : 'N/A';
+                lines.push(`${escapeHtml(colourField)}: ${escapeHtml(String(displayValue))}`);
             }
             return lines.join('<br>');
         }
