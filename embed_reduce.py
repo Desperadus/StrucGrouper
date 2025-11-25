@@ -100,7 +100,7 @@ def main():
     # PCA 2D
     pca_xy, pca_model, pca_scaler = fit_pca_2d(X, whiten=args.whiten)
     pca_df = pd.DataFrame(
-        {"id": ids, "pca_x": pca_xy[:, 0], "pca_y": pca_xy[:, 1]})
+        {"id": ids, "umap_x": pca_xy[:, 0], "umap_y": pca_xy[:, 1]})
     pca_tsv = Path(f"{args.outprefix}_pca.tsv")
     pca_df.to_csv(pca_tsv, sep="\t", index=False)
 
