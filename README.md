@@ -77,11 +77,7 @@ Produces both PCA (`*_pca.tsv`/`.png`) and UMAP (`*_umap.tsv`/`.png`) summaries.
   ```
 
 ## AlphaFold UMAP Explorer
-1. Serve the repository (browser security blocks `file://` AJAX):
-   ```bash
-   python -m http.server 8000
-   ```
-   Visit `http://localhost:8000/index.html`.
+1. Open the `index.html` file.
 2. Upload a coordinates TSV (`id`, `umap_x`, `umap_y`). Example: `data/umap_coords_lipocalins.tsv`.
 3. (Optional) Upload metadata TSV where the first column matches the identifiers in the coordinate file. Example: `data/uniprotkb_GO_0005549_2025_10_30_extended.tsv`.
 4. Click points to stream AlphaFold models (via 3Dmol.js) and fetch UniProt metadata.
